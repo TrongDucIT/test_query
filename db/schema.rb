@@ -11,23 +11,23 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2023_10_19_112804) do
-  create_table "friends", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "Relationship"
-    t.date "AddedDate"
+  create_table "friends", charset: "utf8mb3", force: :cascade do |t|
+    t.integer "relationship"
+    t.date "added_date"
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_friends_on_user_id"
   end
 
-  create_table "posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.text "Content"
-    t.datetime "PostTime"
+  create_table "posts", charset: "utf8mb3", force: :cascade do |t|
+    t.text "content"
+    t.datetime "post_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "user_posts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "post_id"
     t.datetime "created_at", null: false
@@ -36,20 +36,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_19_112804) do
     t.index ["user_id"], name: "index_user_posts_on_user_id"
   end
 
-  create_table "user_profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "FullName"
-    t.string "Address"
-    t.string "PhoneNumber"
+  create_table "user_profiles", charset: "utf8mb3", force: :cascade do |t|
+    t.string "full_name"
+    t.string "address"
+    t.string "phone_number"
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_user_profiles_on_user_id"
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "Username"
-    t.string "Password"
-    t.string "Email"
+  create_table "users", charset: "utf8mb3", force: :cascade do |t|
+    t.string "user_name"
+    t.string "password"
+    t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
