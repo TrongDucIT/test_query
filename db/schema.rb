@@ -13,8 +13,9 @@
 ActiveRecord::Schema[7.0].define(version: 2023_10_19_112804) do
   create_table "friends", charset: "utf8mb3", force: :cascade do |t|
     t.integer "relationship"
-    t.date "added_date"
     t.bigint "user_id"
+    t.integer "friend_id"
+    t.date "added_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_friends_on_user_id"

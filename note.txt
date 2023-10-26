@@ -1,0 +1,37 @@
+-- Bảng Người dùng (Users)
+CREATE TABLE Users (
+    user_name VARCHAR(255),
+    password VARCHAR(255),
+    email VARCHAR(255)
+);
+
+-- Bảng Thông tin cá nhân (UserProfiles)
+CREATE TABLE UserProfiles (
+    full_name VARCHAR(255),
+    address VARCHAR(255),
+    phone_number VARCHAR(15),
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- Bảng Bài viết (Posts)
+CREATE TABLE Posts (
+    content TEXT,
+    post_time DATETIME,
+);
+
+-- Bảng Danh sách bạn (Friends)
+CREATE TABLE Friend (
+    relationship INT, -- 1 để biểu thị bạn bè, có thể thay đổi theo nhu cầu
+    added_date DATE,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- Bảng UserPosts (Bảng nối cho quan hệ nhiều-nhiều)
+CREATE TABLE UserPosts (
+    user_id INT,
+    post_id INT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id)
+);

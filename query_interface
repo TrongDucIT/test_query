@@ -1,0 +1,225 @@
+-------------- find -------------------
+#truy xuất đối tượng ứng với khóa chính
+user = User.find(10)  <=> SELECT * FROM user WHERE (user.id = 10) LIMIT 1
+
+# truy vấn nhiều đối tượng
+user = User.find([1, 3])   <=> SELECT * FROM user WHERE (user.id IN (1,10))
+
+# nhiều khóa chính(id, userid)
+micropost = Micropost.find([3, 17])   <=> SELECT * FROM user WHERE store_id = 3 AND id = 17
+
+# tìm nhiều user trong bảng nhiều khóa chính
+micropost = Micropost.find([[1, 8], [7, 15]])   <=> SELECT * FROM user WHERE (store_id = 1 AND id = 8 OR store_id = 7 AND id = 15)
+
+
+----------------------------------- take -------------------------------------
+# truy xuất một bản ghi biết thứ tự  => trả về nil nếu không tìm thấy bản ghi nào
+user = User.take   <=> SELECT * FROM user LIMIT 1
+
+# thêm số vào phương thức take để trả về số lượng kết quả đó
+user = User.take(3)   <=> SELECT * FROM user LIMIT 2
+
+
+---------------------------------- first -----------------------------------
+# tìm bản ghi đầu tiên ứng với id
+user = User.first   <=> SELECT * FROM user ORDER BY user.id ASC LIMIT 1
+
+# có thể thêm số vào first để trả về số lượng kq
+user = User.first(3)   <=> SELECT * FROM user ORDER BY user.id ASC LIMIT 3
+
+# nhiều khóa chính (id, user_id)
+microposts = Micropost.first   <=> SELECT * FROM microposts ORDER BY microposts.user_id ASC, microposts.id ASC LIMIT 1
+
+-------------------------------- last --------------------------------------
+# tìm bản ghi cuối cùng
+user = User.last   <=> SELECT * FROM user ORDER BY user.id DESC LIMIT 1
+
+# có thể thêm số vào phương thức last để trả về số lượng kq
+user = User.last(3)   <=> SELECT * FROM user ORDER BY user.id DESC LIMIT 3
+
+
+---------------------------------- find_by ------------------------------
+# tìm bản ghi đầu tiên khớp với một số điều kiện
+user = User.find_by name: 'ducnt1'   <=> SELECT * FROM customers WHERE (customers.first_name = 'Lifo') LIMIT 1
+
+=> tương đương ......... user = User.where(name: 'ducnt1').take
+
+
+----------------------------- find_each ------------------------------
+# Lấy và xử lý dữ liệu từ bảng Micropost
+Micropost.find_each do |micropost|
+  puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+end
+
+# find_each(batch_size)
+...Lấy và xử lý dữ liệu từ bảng Micropost với batch size là 50
+Micropost.find_each(batch_size: 50) do |micropost|
+  puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+end
+
+# find_each(start)
+...Lấy và xử lý dữ liệu từ bảng Micropost, bắt đầu từ bản ghi thứ 21
+Micropost.find_each(start: 20) do |micropost|
+  puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+end
+
+#finish
+.... post có id từ 20-30
+Micropost.find_each(start: 20, finish: 30) do |micropost|
+  puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+end
+
+
+------------------------- find_in_batches ---------------------------
+# Lấy và xử lý dữ liệu từ bảng Microposts theo từng batch gồm 50 bản ghi
+Micropost.find_in_batches(batch_size: 50) do |batch|
+  batch.each do |micropost|
+    puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+  end
+end
+
+# find_in_batches(batch_size)
+# Lấy và xử lý dữ liệu từ bảng Microposts theo từng batch gồm 25 bản ghi
+Micropost.find_in_batches do |batch|
+  batch.each do |micropost|
+    puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+  end
+end
+
+# find_in_batches(start)
+Micropost.find_in_batches(batch_size: 25, start: 30) do |batch|
+  batch.each do |micropost|
+    puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+  end
+end
+
+# find_in_batches(finish)
+Micropost.find_in_batches(finish: 25) do |batch|
+  batch.each do |micropost|
+    puts "User ID: #{micropost.user_id}, Content: #{micropost.content}"
+  end
+end
+
+------------------------------------ limit -------------------------------
+users = User.limit(5)
+
+# Sử dụng `limit` và `offset` để lấy 5 bản ghi User bắt đầu từ bản ghi thứ 3
+users = User.limit(5).offset(2)
+
+# Hiển thị thông tin của các người dùng
+users.each do |user|
+  puts "Name: #{user.name}, Email: #{user.email}"
+end
+
+
+----------------------------------- group ---------------------------------
+uset = User.select("created_at").group("created_at")   <=> SELECT created_at
+                                                           FROM orders
+                                                           GROUP BY created_at
+
+# tong cac muc duoc nhom
+uset = User.select("created_at").group("created_at").count   <=> SELECT COUNT (*) AS count_all, status AS status
+                                                                 FROM orders
+                                                                 GROUP BY status
+
+
+---------------------------------- unscope  -----------------------------
+#cdieu kien co trong unscope thi khong duoc thuc thi
+# Tạo một truy vấn với điều kiện `where`
+query = User.where(name: 'ducnt1')
+
+# Sử dụng `unscope` để xóa điều kiện `where`
+query_without_where = query.unscope(:where)
+
+# Hiển thị kết quả truy vấn sau khi loại bỏ điều kiện `where`
+query_without_where.to_sql
+
+
+--------------------------------- only ----------------------------------
+#chi thuc thi cac dieu kien trong only
+query = User.where(name: 'ducnt1').limit(10).order('id desc').only(:where, :order)
+
+
+
+-------------------------------- reselect ------------------------------
+# ghi de cau lenh da chon truoc do
+query = User.select(:name, :email)
+
+query_with_reselect = query.reselect(:name, :password)
+
+
+------------------------------ reorder ---------------------------------
+.....................thay đổi cách sắp xếp (ORDER BY) của truy vấn.............
+# Tạo một truy vấn ban đầu với trường hợp sắp xếp theo 'name'
+query = User.order(name: :asc)
+
+# Sử dụng `reorder` để thay đổi trường sắp xếp thành 'email'
+query_with_reorder = query.reorder(email: :asc)
+
+
+
+---------------------------- reverse_order ---------------------------
+..............đảo ngược thứ tự sắp xếp của truy vấn...................
+# Tạo một truy vấn ban đầu với sắp xếp theo 'name' tăng dần
+query = User.order(name: :asc)
+
+# Sử dụng `reverse_order` để đảo ngược thứ tự sắp xếp
+query_reverse_order = query.reverse_order
+
+
+
+------------------------ rewhere --------------------------------
+# Tạo một truy vấn ban đầu với điều kiện `where`
+query = User.where(name: 'ducnt1')
+
+# Sử dụng `rewhere` để thay đổi điều kiện thành `where` mới
+query_rewhere = query.rewhere(name: 'Alice')
+
+----------------------- regroup ---------------------------------
+query1 = Micropost.select("created_at").group("created_at")
+query2 = Micropost.group(:user_id)
+
+regroup1 = query1.regroup('updated_at')
+regroup2 = query2.regroup('created_at')
+
+
+---------------------- includes ---------------------------------
+# lay 10 ban ghi va tai cac moi quan he(microposts) lien quan toi user
+micropost = User.includes(:microposts).limit(10)
+
+# mang nhieu lien ket
+query_includes = User.includes(:microposts, :comment)
+
+# ham bam lien ket long nhau
+Customer.includes(orders: { books: [:supplier, :author] }).find(1)
+
+# icludes voi where
+# Tải người dùng (User) và các bài viết (Micropost) của người dùng có ID là 1
+user = User.includes(:microposts).where(id: 1).first
+
+# Tải người dùng (User) và các bài viết (Micropost) của người dùng có email là 'example@email.com'
+users = User.includes(:microposts).where(email: 'example@email.com').references(:microposts)
+
+
+
+---------------------------- select all -----------------------------------------
+#Truy xuất các đối tượng từ cơ sở dữ liệu bằng SQL tùy chỉnh
+User.connection.select_all("SELECT name, created_at FROM users WHERE id = '1'").to_a
+
+#pluck
+
+---> #lấy danh sách giá trị từ một cột cụ thể()
+    user_emails = User.pluck(:email)
+    puts user_emailsemail
+
+---> #Lấy danh sách email và nội dung của các microposts của những người dùng
+    user_emails_and_microposts = User.where(name: 'Example User').joins(:microposts).pluck('users.email', 'microposts.content')
+
+    user_emails_and_microposts.each do |result|
+      user_email, micropost_content = result
+      puts "User Email: #{user_email}, Micropost Content: #{micropost_content}"
+    end
+
+---> danh sach nguoi dung va soluong microposts cua ho
+ user_names_and_micropost_counts = User.left_joins(:microposts).group('users.name').pluck('users.name, COUNT(microposts.id) as micropost_count')
+

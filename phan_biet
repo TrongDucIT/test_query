@@ -1,0 +1,7 @@
+-------------- find_by va where ---------------------
+
+find_by: Trả về một đối tượng đầu tiên mà thỏa mãn điều kiện. Không tìm thấy ==> nil.
+where: Trả về một danh sách những thứ gì liên quan đến điều kiện tìm kiếm.
+        Không tìm thấy ==> []
+
+--------------- take --------------
